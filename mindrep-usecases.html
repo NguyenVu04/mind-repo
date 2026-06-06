@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindRepo — Đặc tả Use Case</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f0d;
+  --bg2: #161614;
+  --bg3: #1e1e1b;
+  --bg4: #252520;
+  --line: rgba(255,255,255,0.07);
+  --line2: rgba(255,255,255,0.12);
+  --ink: #e8e6df;
+  --ink2: #a8a59c;
+  --ink3: #6b6860;
+  --ink4: #3d3b36;
+  --green: #4ade80;
+  --green-d: #166534;
+  --green-bg: rgba(74,222,128,0.08);
+  --amber: #fbbf24;
+  --amber-d: #78350f;
+  --amber-bg: rgba(251,191,36,0.08);
+  --red: #f87171;
+  --red-d: #7f1d1d;
+  --red-bg: rgba(248,113,113,0.08);
+  --blue: #60a5fa;
+  --blue-d: #1e3a5f;
+  --blue-bg: rgba(96,165,250,0.08);
+  --purple: #c084fc;
+  --purple-bg: rgba(192,132,252,0.08);
+  --teal: #2dd4bf;
+  --teal-bg: rgba(45,212,191,0.08);
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --serif: 'IBM Plex Serif', serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ── */
+.shell { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--line);
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+.sb-header {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.sb-logo {
+  font-family: var(--mono); font-size: 13px; font-weight: 500;
+  color: var(--green); letter-spacing: .08em;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+.sb-logo-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.sb-subtitle { font-size: 11px; color: var(--ink3); font-family: var(--mono); }
+.sb-search {
+  margin: 12px 12px 0;
+  background: var(--bg3); border: 1px solid var(--line2);
+  border-radius: 4px; display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+}
+.sb-search input {
+  background: none; border: none; outline: none;
+  font-family: var(--mono); font-size: 11px; color: var(--ink);
+  width: 100%;
+}
+.sb-search input::placeholder { color: var(--ink3); }
+.sb-search-icon { color: var(--ink3); font-size: 12px; flex-shrink: 0; }
+.sb-filters {
+  padding: 12px 12px 8px;
+  border-bottom: 1px solid var(--line);
+}
+.sb-filter-label { font-size: 10px; color: var(--ink3); font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.filter-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  font-family: var(--mono); font-size: 10px;
+  padding: 3px 8px; border-radius: 2px;
+  border: 1px solid var(--line2); color: var(--ink3);
+  cursor: pointer; transition: all .15s; background: transparent;
+}
+.chip:hover { border-color: var(--ink3); color: var(--ink2); }
+.chip.active { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.chip.filter-group { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
+.chip.filter-community { border-color: var(--purple); color: var(--purple); background: var(--purple-bg); }
+.chip.filter-ai { border-color: var(--teal); color: var(--teal); background: var(--teal-bg); }
+.chip.filter-payment { border-color: var(--amber); color: var(--amber); background: var(--amber-bg); }
+.sb-nav { flex: 1; padding: 8px 0; }
+.nav-group-label {
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 10px 16px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 16px; cursor: pointer;
+  transition: background .12s; border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--bg3); }
+.nav-item.active { background: var(--bg3); border-left-color: var(--green); }
+.nav-id { font-family: var(--mono); font-size: 10px; color: var(--ink3); min-width: 44px; }
+.nav-title { font-size: 12px; color: var(--ink2); flex: 1; line-height: 1.3; }
+.nav-item.active .nav-title { color: var(--ink); }
+.nav-prio { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.prio-p0 { background: var(--red); }
+.prio-p1 { background: var(--amber); }
+.prio-p2 { background: var(--green); }
+.hidden { display: none !important; }
+
+/* ── MAIN ── */
+.main { flex: 1; min-width: 0; }
+.main-header {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(15,15,13,.92); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--ink3); display: flex; align-items: center; gap: 6px; }
+.breadcrumb span { color: var(--ink2); }
+.header-meta { display: flex; gap: 16px; align-items: center; }
+.meta-pill {
+  font-family: var(--mono); font-size: 10px;
+  padding: 3px 8px; border-radius: 2px;
+}
+.meta-version { background: var(--green-bg); color: var(--green); border: 1px solid rgba(74,222,128,.2); }
+.meta-date { background: var(--bg3); color: var(--ink3); border: 1px solid var(--line); }
+.content { padding: 40px; max-width: 900px; }
+
+/* ── SUMMARY TABLE ── */
+.summary-section { margin-bottom: 48px; }
+.section-eyebrow { font-family: var(--mono); font-size: 10px; color: var(--green); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+.section-title { font-family: var(--serif); font-size: 28px; color: var(--ink); line-height: 1.2; margin-bottom: 6px; }
+.section-desc { font-size: 13px; color: var(--ink2); max-width: 560px; line-height: 1.7; margin-bottom: 24px; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.matrix-table th {
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 8px 12px; text-align: left;
+  border-bottom: 1px solid var(--line2);
+  background: var(--bg2);
+}
+.matrix-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.matrix-table tr:hover td { background: var(--bg2); }
+.matrix-table tr { cursor: pointer; transition: background .1s; }
+.uc-id { font-family: var(--mono); font-size: 11px; color: var(--ink3); white-space: nowrap; }
+.uc-name { font-size: 12px; color: var(--ink); font-weight: 500; }
+.uc-group { font-size: 11px; }
+.badge {
+  display: inline-block; font-family: var(--mono); font-size: 10px;
+  padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+}
+.b-repo { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(96,165,250,.2); }
+.b-ai { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(45,212,191,.2); }
+.b-community { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(192,132,252,.2); }
+.b-payment { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,.2); }
+.b-auth { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
+.prio-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 2px;
+}
+.prio-critical { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
+.prio-high { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,.2); }
+.prio-medium { background: var(--green-bg); color: var(--green); border: 1px solid rgba(74,222,128,.2); }
+.value-bar { display: flex; align-items: center; gap: 6px; }
+.bar { height: 4px; border-radius: 2px; }
+.bar-value { background: var(--green); }
+.bar-diff { background: var(--amber); }
+.bar-track { width: 48px; height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+.bar-num { font-family: var(--mono); font-size: 10px; color: var(--ink3); min-width: 20px; }
+
+/* ── USE CASE CARD ── */
+.uc-card { margin-bottom: 48px; scroll-margin-top: 80px; }
+.uc-card-header {
+  display: flex; align-items: flex-start; gap: 16px;
+  margin-bottom: 20px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.uc-card-id-block { flex-shrink: 0; }
+.uc-card-id {
+  font-family: var(--mono); font-size: 11px; color: var(--ink3);
+  background: var(--bg3); border: 1px solid var(--line2);
+  padding: 4px 10px; border-radius: 2px; display: block; margin-bottom: 6px;
+  text-align: center;
+}
+.uc-card-title { font-family: var(--serif); font-size: 20px; color: var(--ink); line-height: 1.3; margin-bottom: 6px; }
+.uc-card-subtitle { font-size: 12px; color: var(--ink2); line-height: 1.6; max-width: 540px; }
+.uc-meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.meta-item { display: flex; align-items: center; gap: 6px; }
+.meta-key { font-family: var(--mono); font-size: 10px; color: var(--ink3); }
+.score-block {
+  background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 4px; padding: 12px 16px; margin-bottom: 20px;
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
+}
+.score-item { text-align: center; }
+.score-num { font-family: var(--mono); font-size: 22px; font-weight: 500; line-height: 1; margin-bottom: 2px; }
+.score-label { font-size: 10px; color: var(--ink3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+.score-bar-row { display: flex; gap: 2px; justify-content: center; margin-top: 4px; }
+.score-pip { width: 6px; height: 6px; border-radius: 1px; background: var(--bg4); }
+.score-pip.on { background: currentColor; }
+.priority-indicator {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 3px;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  margin-bottom: 20px;
+}
+
+/* ── FIELD ROWS ── */
+.field-block { margin-bottom: 16px; }
+.field-label {
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px;
+}
+.field-value { font-size: 13px; color: var(--ink2); line-height: 1.7; }
+.field-value strong { color: var(--ink); font-weight: 500; }
+
+/* ── SCENARIO TABLE ── */
+.scenario-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 12px; }
+.scenario-table th {
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 7px 10px; text-align: left;
+  background: var(--bg3); border-bottom: 1px solid var(--line2);
+}
+.scenario-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+.scenario-table tr:last-child td { border-bottom: none; }
+.step-num {
+  font-family: var(--mono); font-size: 10px; color: var(--ink3);
+  background: var(--bg3); border: 1px solid var(--line);
+  width: 22px; height: 22px; border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+}
+.actor-user { color: var(--blue); }
+.actor-system { color: var(--teal); }
+.actor-worker { color: var(--purple); }
+.td-action { color: var(--ink2); }
+.td-response { color: var(--ink3); font-style: italic; }
+code {
+  font-family: var(--mono); font-size: 11px;
+  background: var(--bg3); border: 1px solid var(--line);
+  padding: 1px 5px; border-radius: 2px; color: var(--teal);
+}
+
+/* ── ALT FLOWS ── */
+.alt-flow {
+  background: var(--bg3); border: 1px solid var(--line);
+  border-radius: 4px; padding: 12px 14px; margin-bottom: 8px;
+}
+.alt-flow-id { font-family: var(--mono); font-size: 10px; color: var(--amber); margin-bottom: 4px; }
+.alt-flow-title { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.alt-flow-body { font-size: 12px; color: var(--ink2); line-height: 1.65; }
+
+/* ── NFR ── */
+.nfr-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.nfr-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12px; color: var(--ink2); line-height: 1.5;
+}
+.nfr-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--green); flex-shrink: 0; margin-top: 6px; }
+
+/* ── SECTION DIVIDER ── */
+.uc-divider {
+  height: 1px; background: var(--line);
+  margin: 48px 0; position: relative;
+}
+.uc-divider::after {
+  content: attr(data-group);
+  position: absolute; left: 0; top: -9px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink3); background: var(--bg);
+  padding-right: 12px; letter-spacing: .1em; text-transform: uppercase;
+}
+
+/* ── SUBSECTION ── */
+.subsec { margin-bottom: 20px; }
+.subsec-title {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--ink2); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.subsec-title::before { content: ''; display: block; width: 16px; height: 1px; background: var(--ink3); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+/* ── PRIORITY LABEL ── */
+.prio-P0 { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,.2); }
+.prio-P1 { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(251,191,36,.2); }
+.prio-P2 { background: var(--green-bg); color: var(--green); border: 1px solid rgba(74,222,128,.2); }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .content { padding: 20px; }
+  .main-header { padding: 12px 20px; }
+  .score-block { grid-template-columns: repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo"><div class="sb-logo-dot"></div>MindRepo</div>
+    <div class="sb-subtitle">use-case-spec v1.0</div>
+  </div>
+  <div class="sb-search">
+    <span class="sb-search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="Tìm use case...">
+  </div>
+  <div class="sb-filters">
+    <div class="sb-filter-label">Nhóm</div>
+    <div class="filter-chips">
+      <button class="chip active" data-filter="all">Tất cả</button>
+      <button class="chip filter-auth" data-filter="auth" style="border-color:var(--red);color:var(--red);background:var(--red-bg)">Auth</button>
+      <button class="chip filter-group" data-filter="repo">Repo</button>
+      <button class="chip filter-ai" data-filter="ai">AI</button>
+      <button class="chip filter-community" data-filter="community">Community</button>
+      <button class="chip filter-payment" data-filter="payment">Payment</button>
+    </div>
+  </div>
+  <nav class="sb-nav" id="sidebarNav">
+    <div class="nav-group-label">Auth & Onboarding</div>
+    <a class="nav-item" href="#uc-01" data-group="auth"><span class="nav-id">UC-01</span><span class="nav-title">Đăng ký & Provision</span><span class="nav-prio prio-p0"></span></a>
+    <a class="nav-item" href="#uc-02" data-group="auth"><span class="nav-id">UC-02</span><span class="nav-title">Onboarding Profile</span><span class="nav-prio prio-p0"></span></a>
+    <div class="nav-group-label">Quản lý Repo</div>
+    <a class="nav-item" href="#uc-03" data-group="repo"><span class="nav-id">UC-03</span><span class="nav-title">Tạo & quản lý repo</span><span class="nav-prio prio-p0"></span></a>
+    <a class="nav-item" href="#uc-04" data-group="repo"><span class="nav-id">UC-04</span><span class="nav-title">Upload & index tài liệu</span><span class="nav-prio prio-p0"></span></a>
+    <a class="nav-item" href="#uc-05" data-group="repo"><span class="nav-id">UC-05</span><span class="nav-title">Learning path builder</span><span class="nav-prio prio-p0"></span></a>
+    <a class="nav-item" href="#uc-06" data-group="repo"><span class="nav-id">UC-06</span><span class="nav-title">Học theo learning path</span><span class="nav-prio prio-p0"></span></a>
+    <div class="nav-group-label">AI Tutor</div>
+    <a class="nav-item" href="#uc-07" data-group="ai"><span class="nav-id">UC-07</span><span class="nav-title">Tương tác AI Tutor</span><span class="nav-prio prio-p0"></span></a>
+    <a class="nav-item" href="#uc-08" data-group="ai"><span class="nav-id">UC-08</span><span class="nav-title">Tạo & ôn flashcard</span><span class="nav-prio prio-p1"></span></a>
+    <div class="nav-group-label">Community</div>
+    <a class="nav-item" href="#uc-09" data-group="community"><span class="nav-id">UC-09</span><span class="nav-title">Tìm kiếm & khám phá</span><span class="nav-prio prio-p0"></span></a>
+    <a class="nav-item" href="#uc-10" data-group="community"><span class="nav-id">UC-10</span><span class="nav-title">Annotation tài liệu</span><span class="nav-prio prio-p1"></span></a>
+    <a class="nav-item" href="#uc-11" data-group="community"><span class="nav-id">UC-11</span><span class="nav-title">Review & đánh giá repo</span><span class="nav-prio prio-p1"></span></a>
+    <div class="nav-group-label">Payment</div>
+    <a class="nav-item" href="#uc-12" data-group="payment"><span class="nav-id">UC-12</span><span class="nav-title">Nâng cấp subscription</span><span class="nav-prio prio-p2"></span></a>
+    <a class="nav-item" href="#uc-13" data-group="payment"><span class="nav-id">UC-13</span><span class="nav-title">Quản lý subscription</span><span class="nav-prio prio-p2"></span></a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="main-header">
+    <div class="breadcrumb">MindRepo <span>/</span> docs <span>/</span> use-case-specification</div>
+    <div class="header-meta">
+      <span class="meta-pill meta-version">v1.0-mvp</span>
+      <span class="meta-pill meta-date">2025</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="summary-section">
+      <div class="section-eyebrow">Tài liệu đặc tả</div>
+      <h1 class="section-title">Use Case Specification</h1>
+      <p class="section-desc">Đặc tả đầy đủ 13 use case cốt lõi của MindRepo MVP. Mỗi use case được đánh giá theo <strong>giá trị người dùng</strong> (1–5), <strong>độ khó hiện thực</strong> (1–5), và <strong>điểm ưu tiên</strong> tổng hợp. Ưu tiên P0 là bắt buộc cho MVP, P1 là quan trọng, P2 là mở rộng.</p>
+
+      <!-- PRIORITY MATRIX -->
+      <div class="subsec-title">Ma trận ưu tiên</div>
+      <table class="matrix-table" id="matrixTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tên use case</th>
+            <th>Nhóm</th>
+            <th>Tác nhân</th>
+            <th>Giá trị</th>
+            <th>Độ khó</th>
+            <th>Ưu tiên</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="document.getElementById('uc-01').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-01</td><td class="uc-name">Đăng ký & Provision</td>
+            <td><span class="badge b-auth">Auth</span></td><td style="color:var(--ink2);font-size:11px">Guest</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-02').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-02</td><td class="uc-name">Onboarding Profile</td>
+            <td><span class="badge b-auth">Auth</span></td><td style="color:var(--ink2);font-size:11px">New User</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:40%"></div></div><span class="bar-num">2</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-03').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-03</td><td class="uc-name">Tạo & quản lý repo</td>
+            <td><span class="badge b-repo">Repo</span></td><td style="color:var(--ink2);font-size:11px">Repo Owner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:40%"></div></div><span class="bar-num">2</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-04').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-04</td><td class="uc-name">Upload & index tài liệu</td>
+            <td><span class="badge b-repo">Repo</span></td><td style="color:var(--ink2);font-size:11px">Repo Owner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-05').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-05</td><td class="uc-name">Learning path builder</td>
+            <td><span class="badge b-repo">Repo</span></td><td style="color:var(--ink2);font-size:11px">Repo Owner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:80%"></div></div><span class="bar-num">4</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:40%"></div></div><span class="bar-num">2</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-06').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-06</td><td class="uc-name">Học theo learning path</td>
+            <td><span class="badge b-repo">Repo</span></td><td style="color:var(--ink2);font-size:11px">Learner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:40%"></div></div><span class="bar-num">2</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-07').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-07</td><td class="uc-name">Tương tác AI Tutor</td>
+            <td><span class="badge b-ai">AI</span></td><td style="color:var(--ink2);font-size:11px">Learner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:80%"></div></div><span class="bar-num">4</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-08').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-08</td><td class="uc-name">Tạo & ôn flashcard</td>
+            <td><span class="badge b-ai">AI</span></td><td style="color:var(--ink2);font-size:11px">Learner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:80%"></div></div><span class="bar-num">4</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><span class="prio-badge prio-high">P1 High</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-09').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-09</td><td class="uc-name">Tìm kiếm & khám phá</td>
+            <td><span class="badge b-repo">Repo</span></td><td style="color:var(--ink2);font-size:11px">Guest / Learner</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:100%"></div></div><span class="bar-num">5</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:40%"></div></div><span class="bar-num">2</span></div></td>
+            <td><span class="prio-badge prio-critical">P0 Critical</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-10').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-10</td><td class="uc-name">Annotation tài liệu</td>
+            <td><span class="badge b-community">Community</span></td><td style="color:var(--ink2);font-size:11px">Contributor</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:80%"></div></div><span class="bar-num">4</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><span class="prio-badge prio-high">P1 High</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-11').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-11</td><td class="uc-name">Review & đánh giá repo</td>
+            <td><span class="badge b-community">Community</span></td><td style="color:var(--ink2);font-size:11px">Contributor</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:80%"></div></div><span class="bar-num">4</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><span class="prio-badge prio-high">P1 High</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-12').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-12</td><td class="uc-name">Nâng cấp subscription</td>
+            <td><span class="badge b-payment">Payment</span></td><td style="color:var(--ink2);font-size:11px">User</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:80%"></div></div><span class="bar-num">4</span></div></td>
+            <td><span class="prio-badge prio-medium">P2 Medium</span></td>
+          </tr>
+          <tr onclick="document.getElementById('uc-13').scrollIntoView({behavior:'smooth'})">
+            <td class="uc-id">UC-13</td><td class="uc-name">Quản lý subscription</td>
+            <td><span class="badge b-payment">Payment</span></td><td style="color:var(--ink2);font-size:11px">User</td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-value" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><div class="value-bar"><div class="bar-track"><div class="bar bar-diff" style="width:60%"></div></div><span class="bar-num">3</span></div></td>
+            <td><span class="prio-badge prio-medium">P2 Medium</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="uc-divider" data-group="Auth & Onboarding"></div>
+
+    <!-- UC-01 -->
+    <div class="uc-card" id="uc-01" data-group="auth">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-01</span><span class="badge b-auth">Auth</span></div>
+        <div>
+          <h2 class="uc-card-title">Đăng ký & Provision tài khoản</h2>
+          <p class="uc-card-subtitle">Người dùng đăng ký lần đầu qua Auth0. Hệ thống tự động tạo bản ghi PostgreSQL và sync metadata ngược lên Auth0 để các lần login tiếp theo có đủ claims.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">3</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân chính:</span> <span style="color:var(--ink2);font-size:12px">Guest (chưa có tài khoản)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>user-service :8081</code></div>
+        <div class="meta-item"><span class="meta-key">Phụ thuộc:</span> <span style="color:var(--ink2);font-size:12px">Auth0, PostgreSQL, Redis</span></div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">Điều kiện tiên quyết</div>
+        <div class="field-value">Người dùng chưa có tài khoản. Auth0 tenant đã được cấu hình với <code>post-user-registration</code> action và Management API token.</div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">Điều kiện hậu (Post-condition)</div>
+        <div class="field-value">Bản ghi <code>user_svc.users</code> được tạo với <code>auth0_id</code> và <code>email</code>. Auth0 <code>app_metadata</code> chứa <code>pg_user_id</code> và <code>onboarding_completed: false</code>. Token mới được issue, Next.js redirect sang <code>/onboarding</code>.</div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Guest</td><td class="td-action">Nhấn "Đăng ký" — chọn Google OAuth hoặc email/password</td><td class="td-response">Redirect sang Auth0 Universal Login page</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-system">Auth0</td><td class="td-action">Xác thực xong, trigger <code>post-user-registration</code> action</td><td class="td-response">Action gọi <code>POST /internal/provision</code> trên user-service</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-system">User Service</td><td class="td-action">Nhận <code>auth0_id</code> + <code>email</code> + <code>name</code> + <code>picture</code></td><td class="td-response">Idempotency check: nếu <code>auth0_id</code> đã tồn tại → skip. Nếu không → tạo bản ghi mới</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">User Service</td><td class="td-action">Gọi Auth0 Management API: cập nhật <code>app_metadata</code></td><td class="td-response"><code>pg_user_id</code>, <code>onboarding_completed: false</code> được ghi vào Auth0</td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-system">Next.js</td><td class="td-action">Nhận callback từ Auth0 với token ban đầu (chưa có <code>app_user_id</code>)</td><td class="td-response">Gọi <code>getAccessTokenSilently({cacheMode:'off'})</code> để lấy token mới có đủ claims</td></tr>
+            <tr><td><div class="step-num">6</div></td><td class="actor-system">Next.js Middleware</td><td class="td-action">Decode token, phát hiện <code>onboarding_completed: false</code></td><td class="td-response">Redirect về <code>/onboarding</code>, chặn tất cả route khác</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng thay thế</div>
+        <div class="alt-flow"><div class="alt-flow-id">A1 — Provision webhook thất bại</div><div class="alt-flow-title">Auth0 action không gọi được user-service</div><div class="alt-flow-body">Auth0 action retry tối đa 3 lần. Nếu vẫn thất bại, user login thành công nhưng token không có <code>app_user_id</code>. Next.js middleware phát hiện, gọi <code>POST /auth/provision</code> trực tiếp từ client. Đây là fallback path đảm bảo provision luôn xảy ra.</div></div>
+        <div class="alt-flow"><div class="alt-flow-id">A2 — User đã tồn tại (re-provision)</div><div class="alt-flow-title">Gọi provision cho user đã có bản ghi</div><div class="alt-flow-body">User service kiểm tra <code>auth0_id</code> trước khi insert. Nếu đã tồn tại: trả về bản ghi hiện có, không tạo duplicate. Token được refresh với data hiện tại.</div></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Provision endpoint phải idempotent — gọi N lần với cùng <code>auth0_id</code> cho kết quả như nhau</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Toàn bộ flow (Auth0 → provision → token refresh) hoàn thành trong &lt; 3 giây</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Không lưu bất kỳ credential nào — chỉ lưu <code>auth0_id</code> làm foreign reference</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-02 -->
+    <div class="uc-card" id="uc-02" data-group="auth">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-02</span><span class="badge b-auth">Auth</span></div>
+        <div>
+          <h2 class="uc-card-title">Onboarding Profile</h2>
+          <p class="uc-card-subtitle">Người dùng mới điền thông tin bắt buộc sau lần đăng nhập đầu tiên. Hệ thống chặn tất cả route cho đến khi onboarding hoàn tất. Đây là thời điểm thu thập <code>username</code> duy nhất dùng trong URL repo.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">2</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">New User (onboarding_completed: false)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>user-service :8081</code></div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">Thông tin bắt buộc</div>
+        <div class="field-value"><strong>username</strong> — 3–32 ký tự, chỉ <code>a-z 0-9 -</code>, unique toàn platform, dùng trong URL: <code>mindrep.io/@username/repo-name</code><br><strong>domains</strong> — ít nhất 1 domain quan tâm (e.g. machine-learning, physics)</div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">Thông tin tự động điền (từ OAuth provider)</div>
+        <div class="field-value"><code>display_name</code> lấy từ Google <code>name</code>, <code>avatar_url</code> lấy từ Google <code>picture</code>. User có thể thay đổi sau.</div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-system">Next.js</td><td class="td-action">Render trang <code>/onboarding</code>, prefill display_name và avatar từ Google</td><td class="td-response">Form với 2 trường bắt buộc: username + domains selector</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">User</td><td class="td-action">Nhập username, hệ thống validate realtime</td><td class="td-response"><code>GET /users/check-username?u=xxx</code> — trả về available/taken ngay khi user dừng gõ (debounce 400ms)</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-user">User</td><td class="td-action">Chọn ít nhất 1 domain từ danh sách gợi ý</td><td class="td-response">UI highlight domain được chọn</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-user">User</td><td class="td-action">Submit form</td><td class="td-response"><code>PATCH /users/me/onboarding</code> — validate server-side, lưu DB trong transaction</td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-system">User Service</td><td class="td-action">Update <code>app_metadata</code> trên Auth0: <code>username</code>, <code>onboarding_completed: true</code></td><td class="td-response">Trả về <code>{next: "/dashboard", refresh_token: true}</code></td></tr>
+            <tr><td><div class="step-num">6</div></td><td class="actor-system">Next.js</td><td class="td-action">Gọi <code>getAccessTokenSilently({cacheMode:'off'})</code></td><td class="td-response">Token mới có <code>onboarding_completed: true</code>, middleware cho phép vào dashboard</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng thay thế</div>
+        <div class="alt-flow"><div class="alt-flow-id">A1 — Username bị trùng race condition</div><div class="alt-flow-title">Hai user chọn cùng username trong cùng lúc</div><div class="alt-flow-body">Server-side dùng <code>INSERT ... ON CONFLICT DO NOTHING</code> kết hợp unique constraint. Nếu conflict: trả về lỗi <code>409 username_taken</code>, frontend hiển thị inline error, gợi ý 3 biến thể username.</div></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Username check debounce 400ms — không spam API khi user đang gõ</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Update DB và Auth0 phải atomic — nếu Auth0 call thất bại thì rollback DB</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Username regex: <code>^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="uc-divider" data-group="Quản lý Repo & Tài liệu"></div>
+
+    <!-- UC-03 -->
+    <div class="uc-card" id="uc-03" data-group="repo">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-03</span><span class="badge b-repo">Repo</span></div>
+        <div>
+          <h2 class="uc-card-title">Tạo & quản lý repo</h2>
+          <p class="uc-card-subtitle">Người dùng tạo repo — đơn vị tổ chức tài liệu cơ bản của MindRepo. Repo có URL dạng <code>/@username/repo-slug</code>, có thể public hoặc private, và quản lý danh sách contributor với phân quyền.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">2</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Repo Owner (authenticated user)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>repo-service :8082</code></div>
+        <div class="meta-item"><span class="meta-key">Free tier limit:</span> <span style="color:var(--ink2);font-size:12px">20 repos, chỉ public</span></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính — Tạo repo mới</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Owner</td><td class="td-action">Nhấn "New Repo", điền: tên, mô tả, visibility, tags domain</td><td class="td-response">Validate realtime: slug availability check, tên hợp lệ</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">Owner</td><td class="td-action">Submit <code>POST /repos</code></td><td class="td-response">Tạo record trong <code>repo_svc.repos</code>, sinh <code>repo_id</code> và canonical URL</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-system">Repo Service</td><td class="td-action">Tạo Qdrant collection cho repo: <code>repo_{id}</code></td><td class="td-response">Collection sẵn sàng nhận embeddings</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">Repo Service</td><td class="td-action">Tạo MinIO bucket prefix: <code>repos/{repo_id}/</code></td><td class="td-response">Storage path sẵn sàng cho upload</td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-system">System</td><td class="td-action">Redirect owner về trang repo mới tạo</td><td class="td-response">Repo trống, hiển thị prompt "Upload tài liệu đầu tiên"</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng thay thế</div>
+        <div class="alt-flow"><div class="alt-flow-id">A1 — Thêm contributor</div><div class="alt-flow-title">Owner mời người khác đóng góp vào repo</div><div class="alt-flow-body"><code>POST /repos/{id}/contributors</code> với email hoặc username. Hệ thống gửi email mời qua Notification service. Contributor nhận vai <code>viewer</code> hoặc <code>editor</code>.</div></div>
+        <div class="alt-flow"><div class="alt-flow-id">A2 — Đổi visibility</div><div class="alt-flow-title">Chuyển repo từ public sang private (cần plan Pro)</div><div class="alt-flow-body">Nếu user đang ở free tier: trả về <code>403</code> kèm prompt "Nâng cấp Pro để dùng private repo". Nếu đã Pro: update visibility ngay lập tức.</div></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Slug format: <code>^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$</code>, unique per user</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Tạo repo (bao gồm Qdrant collection) hoàn thành &lt; 2 giây</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Xóa repo cascade: xóa tất cả documents, Qdrant collection, MinIO objects, annotations, reviews</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-04 -->
+    <div class="uc-card" id="uc-04" data-group="repo">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-04</span><span class="badge b-repo">Repo</span></div>
+        <div>
+          <h2 class="uc-card-title">Upload & index tài liệu</h2>
+          <p class="uc-card-subtitle">Tài liệu được upload lên MinIO qua presigned URL, sau đó Indexing Worker tự động parse, chunk, embed và lưu vào Qdrant. Đây là điều kiện tiên quyết để AI Tutor hoạt động.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">3</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Repo Owner / Editor</span></div>
+        <div class="meta-item"><span class="meta-key">Services:</span> <code>repo-service</code> <code>indexing-worker</code> <code>ai-service</code></div>
+        <div class="meta-item"><span class="meta-key">Formats:</span> <span style="color:var(--ink2);font-size:12px">PDF, DOCX, MD, TXT — tối đa 50MB/file</span></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Owner</td><td class="td-action">Kéo thả file vào upload zone</td><td class="td-response">Frontend validate: format, kích thước. Hiển thị preview danh sách file</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-system">Frontend</td><td class="td-action"><code>POST /repos/{id}/documents/presign</code> — xin presigned URL</td><td class="td-response">Repo service tạo presigned PUT URL cho MinIO, TTL 15 phút</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-user">Frontend</td><td class="td-action">PUT file trực tiếp lên MinIO qua presigned URL</td><td class="td-response">Progress bar realtime qua XHR upload events</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">Repo Service</td><td class="td-action">Nhận MinIO webhook <code>s3:ObjectCreated</code> — tạo document record</td><td class="td-response">Lưu metadata vào <code>repo_svc.documents</code>, status: <code>pending</code></td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-system">Repo Service</td><td class="td-action">Push job vào Redis queue: <code>indexing_jobs</code></td><td class="td-response">UI cập nhật trạng thái: "Đang xử lý…"</td></tr>
+            <tr><td><div class="step-num">6</div></td><td class="actor-worker">Indexing Worker</td><td class="td-action">Consume job: download từ MinIO → parse (Unstructured.io) → chunk → embed</td><td class="td-response">Upsert vectors vào Qdrant collection của repo</td></tr>
+            <tr><td><div class="step-num">7</div></td><td class="actor-worker">Indexing Worker</td><td class="td-action">Update document status → <code>indexed</code>, publish <code>document.indexed</code> event</td><td class="td-response">UI cập nhật: "Đã index ✓". Notification service gửi email cho contributors</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng thay thế</div>
+        <div class="alt-flow"><div class="alt-flow-id">A1 — File bị mã hóa / không đọc được</div><div class="alt-flow-title">Unstructured.io không parse được</div><div class="alt-flow-body">Worker cập nhật status → <code>failed</code> với error message cụ thể. UI hiển thị "Không thể đọc file — thử xuất lại dưới dạng PDF không mã hóa". Nút "Retry" cho phép thử lại.</div></div>
+        <div class="alt-flow"><div class="alt-flow-id">A2 — Worker retry logic</div><div class="alt-flow-title">Lỗi tạm thời (network, OOM)</div><div class="alt-flow-body">Celery retry tự động: lần 1 sau 2 phút, lần 2 sau 10 phút, lần 3 sau 30 phút. Sau 3 lần: status <code>failed_permanent</code>, cần can thiệp thủ công.</div></div>
+        <div class="alt-flow"><div class="alt-flow-id">A3 — Batch upload</div><div class="alt-flow-title">Upload nhiều file cùng lúc</div><div class="alt-flow-body">Tối đa 20 file per batch. Mỗi file có presigned URL riêng. Processing song song — file nào xong trước hiển thị "indexed" trước. File lỗi không ảnh hưởng các file khác.</div></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Indexing một PDF 100 trang hoàn thành trong &lt; 3 phút</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>AI Tutor chỉ trả lời về document sau khi status = <code>indexed</code></li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Chunking strategy mặc định: recursive text splitter, chunk size 512 tokens, overlap 64 tokens</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Mỗi chunk lưu payload: <code>doc_id</code>, <code>repo_id</code>, <code>page_number</code>, <code>chunk_index</code>, <code>text_preview</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-05 -->
+    <div class="uc-card" id="uc-05" data-group="repo">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-05</span><span class="badge b-repo">Repo</span></div>
+        <div>
+          <h2 class="uc-card-title">Learning path builder</h2>
+          <p class="uc-card-subtitle">Repo owner sắp xếp tài liệu thành lộ trình học có thứ tự với prerequisite dependencies. Biến một bộ tài liệu rời thành curriculum có cấu trúc.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">4</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">2</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Repo Owner / Editor</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>repo-service :8082</code></div>
+        <div class="meta-item"><span class="meta-key">Tối đa:</span> <span style="color:var(--ink2);font-size:12px">3 paths per repo, 50 docs per path</span></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Owner</td><td class="td-action">Vào tab "Learning Path", nhấn "Tạo path mới"</td><td class="td-response">Builder UI: danh sách tài liệu bên trái, canvas sắp xếp bên phải</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-system">AI Service</td><td class="td-action">Phân tích nội dung các tài liệu, gợi ý thứ tự học tối ưu</td><td class="td-response">Hiển thị suggested order với lý do ngắn cho từng vị trí</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-user">Owner</td><td class="td-action">Kéo thả tài liệu vào canvas, điều chỉnh thứ tự</td><td class="td-response">Auto-calculate tổng estimated reading time, cập nhật realtime</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-user">Owner</td><td class="td-action">Kéo đường kết nối giữa tài liệu để đặt prerequisite</td><td class="td-response">Validate: không tạo circular dependency, hiển thị warning nếu vi phạm</td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-user">Owner</td><td class="td-action">Đặt tên path, thêm mô tả ngắn, publish</td><td class="td-response">Path lưu vào <code>repo_svc.learning_paths</code>, hiển thị cho người học</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Auto-save sau mỗi thay đổi — không mất data khi tắt tab</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Circular dependency detection: DFS trên DAG, O(V+E) — thực hiện client-side để feedback ngay lập tức</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Builder hoạt động mượt với 50 nodes (tài liệu) trên canvas</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-06 -->
+    <div class="uc-card" id="uc-06" data-group="repo">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-06</span><span class="badge b-repo">Repo</span></div>
+        <div>
+          <h2 class="uc-card-title">Học theo learning path</h2>
+          <p class="uc-card-subtitle">Người học theo dõi tiến độ cá nhân theo lộ trình, đọc tài liệu inline, và được mở khóa nội dung tiếp theo sau khi đáp ứng prerequisite.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">2</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Learner (authenticated)</span></div>
+        <div class="meta-item"><span class="meta-key">Services:</span> <code>repo-service</code> <code>user-service</code></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Learner</td><td class="td-action">Mở repo, nhấn "Bắt đầu học" trên learning path</td><td class="td-response">Tạo enrollment record, hiển thị step đầu tiên</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">Learner</td><td class="td-action">Đọc tài liệu trong inline reader</td><td class="td-response">Track scroll position, ước tính % đã đọc theo thời gian trên trang</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-user">Learner</td><td class="td-action">Nhấn "Đánh dấu hoàn thành"</td><td class="td-response">Cập nhật progress, kiểm tra prerequisite của step tiếp theo</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">System</td><td class="td-action">Evaluate prerequisite graph — có đủ điều kiện không?</td><td class="td-response">Nếu đủ: mở khóa step tiếp theo. Nếu chưa: hiển thị "Cần hoàn thành [X] trước"</td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-system">System</td><td class="td-action">Hoàn thành toàn bộ path</td><td class="td-response">Cộng reputation points, hiển thị completion screen, gợi ý repo liên quan</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Progress sync realtime về DB — không mất khi reload</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>"Tiếp tục học" banner: resume đúng tài liệu và vị trí scroll cuối cùng</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>PDF inline reader render &lt; 1 giây / trang với lazy loading</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="uc-divider" data-group="AI Tutor"></div>
+
+    <!-- UC-07 -->
+    <div class="uc-card" id="uc-07" data-group="ai">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-07</span><span class="badge b-ai">AI</span></div>
+        <div>
+          <h2 class="uc-card-title">Tương tác AI Tutor</h2>
+          <p class="uc-card-subtitle">Core differentiator của MindRepo. Mỗi repo có AI tutor riêng chỉ trả lời dựa trên nội dung tài liệu trong repo. Câu trả lời được stream token-by-token và luôn kèm trích dẫn nguồn cụ thể.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">4</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Learner</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>ai-service :8090</code> (Python FastAPI)</div>
+        <div class="meta-item"><span class="meta-key">Protocol:</span> <span style="color:var(--ink2);font-size:12px">Server-Sent Events (SSE)</span></div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">RAG Pipeline (chi tiết)</div>
+        <div class="field-value">
+          <strong>1. Hybrid retrieval:</strong> Dense search (text-embedding-3-small) + Sparse search (BM25/SPLADE) trên Qdrant collection của repo, fuse bằng RRF, top-20 candidates<br>
+          <strong>2. Reranking:</strong> BGE-reranker cross-encoder score tất cả 20 candidates, chọn top-4<br>
+          <strong>3. Context expansion:</strong> Parent-child chunking — retrieve chunk nhỏ (precision) nhưng đưa parent chunk vào context (recall)<br>
+          <strong>4. Generation:</strong> Stream qua Claude API, enforce citation format trong system prompt
+        </div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Learner</td><td class="td-action">Nhấn icon AI Tutor hoặc bôi đen đoạn văn → "Hỏi AI"</td><td class="td-response">Mở chat panel, prefill câu hỏi nếu có text được bôi đen</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">Learner</td><td class="td-action">Gửi câu hỏi</td><td class="td-response">Hiển thị typing indicator, bắt đầu SSE stream</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-system">AI Service</td><td class="td-action">Chạy hybrid retrieval + reranking trên Qdrant</td><td class="td-response">Log trace vào LangFuse: retrieval latency, chunks retrieved, reranker scores</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">AI Service</td><td class="td-action">Stream response từ Claude API qua SSE</td><td class="td-response">Token-by-token xuất hiện trong UI. Cuối response: citation list với link đến tài liệu + trang</td></tr>
+            <tr><td><div class="step-num">5</div></td><td class="actor-system">AI Service</td><td class="td-action">Detect key concept → gợi ý flashcard</td><td class="td-response">Hiển thị card preview "Lưu làm flashcard?" với Q&A auto-generated</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng thay thế</div>
+        <div class="alt-flow"><div class="alt-flow-id">A1 — Câu hỏi ngoài phạm vi repo</div><div class="alt-flow-title">Similarity score &lt; 0.65 với tất cả chunks</div><div class="alt-flow-body">AI phản hồi: "Tôi không tìm thấy thông tin này trong tài liệu của repo. Bạn có muốn tôi trả lời từ kiến thức chung không?" — user tự quyết định, không tự động fallback.</div></div>
+        <div class="alt-flow"><div class="alt-flow-id">A2 — Session quá dài</div><div class="alt-flow-title">Conversation history vượt context window</div><div class="alt-flow-body">Sau 10 turns: AI tự động summarize conversation history, nén lại thành system context ngắn gọn để tiếp tục mà không mất coherence.</div></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>First token xuất hiện &lt; 1.5 giây sau khi gửi câu hỏi</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Citation accuracy ≥ 90%: link đến đúng đoạn văn trong tài liệu gốc</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Không bao giờ trả lời ngoài nội dung repo khi không được user cho phép</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Toàn bộ RAG pipeline traced qua LangFuse: latency per step, token cost, retrieval quality score</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-08 -->
+    <div class="uc-card" id="uc-08" data-group="ai">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-08</span><span class="badge b-ai">AI</span></div>
+        <div>
+          <h2 class="uc-card-title">Tạo & ôn tập flashcard</h2>
+          <p class="uc-card-subtitle">AI tự động tạo flashcard từ key concepts trong tài liệu. Người học ôn tập theo spaced repetition đơn giản. Flashcard được lưu per-user và có thể export.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">4</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">3</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">P1</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Learner</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>ai-service :8090</code></div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">Hai nguồn tạo flashcard</div>
+        <div class="field-value"><strong>Từ AI Tutor:</strong> sau mỗi câu trả lời có key concept, AI gợi ý Q&A pair, user accept/reject<br><strong>Từ tài liệu:</strong> user bôi đen đoạn văn → "Tạo flashcard" — AI extract concept và định nghĩa</div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Flashcard generation dùng structured output (JSON schema) để đảm bảo format nhất quán</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Deck per user per repo — không mix flashcard của các repo khác nhau</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Export sang Anki format (.apkg) là nice-to-have ở P2</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="uc-divider" data-group="Community & Discovery"></div>
+
+    <!-- UC-09 -->
+    <div class="uc-card" id="uc-09" data-group="community">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-09</span><span class="badge b-repo">Repo</span></div>
+        <div>
+          <h2 class="uc-card-title">Tìm kiếm & khám phá repo</h2>
+          <p class="uc-card-subtitle">Kênh acquisition chính cho người dùng mới. Public repos được index full-text và có thể tìm thấy qua search hoặc discovery feed mà không cần đăng nhập.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">5</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">2</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--red)">P0</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--red)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Guest / Learner</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>repo-service :8082</code></div>
+        <div class="meta-item"><span class="meta-key">Engine:</span> <span style="color:var(--ink2);font-size:12px">PostgreSQL tsvector + GIN index</span></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">User</td><td class="td-action">Nhập từ khoá vào search bar</td><td class="td-response">Instant suggestion sau 300ms: repo titles + tags match (debounce)</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">User</td><td class="td-action">Nhấn Enter hoặc chọn gợi ý</td><td class="td-response">Full-text search PostgreSQL tsvector, rank theo <code>ts_rank × weighted_score</code></td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-user">User</td><td class="td-action">Áp dụng filter: Domain / Ngôn ngữ / Điểm đánh giá</td><td class="td-response">Kết quả cập nhật realtime không reload trang</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-user">User</td><td class="td-action">Hover vào kết quả</td><td class="td-response">Quick preview: tên, mô tả, 3 tags, số docs, điểm, số người học</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Search latency &lt; 500ms với 10,000 public repos</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>SEO: mỗi public repo có canonical URL, meta description, Open Graph image</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Discovery feed: "Mới nhất" / "Được đánh giá cao" / "Phù hợp với bạn" (dựa trên domains của user)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-10 -->
+    <div class="uc-card" id="uc-10" data-group="community">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-10</span><span class="badge b-community">Community</span></div>
+        <div>
+          <h2 class="uc-card-title">Annotation tài liệu</h2>
+          <p class="uc-card-subtitle">Contributor thêm giải thích, ví dụ, hoặc đính chính inline trên tài liệu mà không thay đổi bản gốc. Annotations sống trong layer riêng biệt.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">4</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">3</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">P1</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Contributor (reputation ≥ 1)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>community-service :8083</code></div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">4 loại annotation</div>
+        <div class="field-value"><strong>Explanation</strong> — giải thích rõ hơn một khái niệm · <strong>Example</strong> — thêm ví dụ thực tế · <strong>Correction</strong> — đính chính thông tin sai · <strong>Question</strong> — đặt câu hỏi để cộng đồng trả lời</div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">Contributor</td><td class="td-action">Bôi đen đoạn văn, chọn "Thêm ghi chú"</td><td class="td-response">Highlight vàng nhạt, mở annotation editor bên phải</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">Contributor</td><td class="td-action">Chọn loại, viết nội dung (≤ 2000 ký tự)</td><td class="td-response">Preview realtime inline trên tài liệu</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-user">Contributor</td><td class="td-action">Publish annotation</td><td class="td-response">Lưu vào <code>community_svc.annotations</code>, notify repo owner</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-user">Repo Owner</td><td class="td-action">Review annotation: Approve / Reject / Merge vào tài liệu gốc</td><td class="td-response">Nếu Approve: hiển thị public. Nếu Merge: integrate vào document content + re-index Qdrant</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Annotation không thay đổi hash/content của tài liệu gốc — lưu bằng text anchor (start/end offset)</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>User mới (reputation &lt; 5) annotation chờ moderator approve trước khi public</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>≥ 5 downvote và &lt; 20% upvote → tự động ẩn, notify repo owner</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-11 -->
+    <div class="uc-card" id="uc-11" data-group="community">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-11</span><span class="badge b-community">Community</span></div>
+        <div>
+          <h2 class="uc-card-title">Review & đánh giá repo</h2>
+          <p class="uc-card-subtitle">Reputation-weighted review system. Review từ domain expert có trọng số cao hơn — chống spam rating, tăng chất lượng curation. Phải đọc ≥ 30% nội dung mới được review.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">4</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">3</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">P1</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Contributor (≥ 30% progress)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>community-service :8083</code></div>
+      </div>
+      <div class="field-block">
+        <div class="field-label">Công thức tính Weighted Score</div>
+        <div class="field-value"><code>WS = Σ(rating_i × weight_i) / Σ(weight_i)</code><br>weight = <code>1.0 + (tier × 0.5)</code> + domain bonus <code>+0.5</code> nếu reviewer có ≥ 3 repos hoàn thành cùng domain</div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Review không thể edit sau 72 giờ — accountability</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Circuit breaker khi gọi User service lấy reputation: fallback về tier 0, đánh dấu <code>used_fallback=true</code> để recalculate sau</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Spam detection: flag review &lt; 20 từ, điểm cực đoan (1 hoặc 5) không có lý giải, nhiều reviews từ cùng IP trong 1 giờ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="uc-divider" data-group="Payment & Subscription"></div>
+
+    <!-- UC-12 -->
+    <div class="uc-card" id="uc-12" data-group="payment">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-12</span><span class="badge b-payment">Payment</span></div>
+        <div>
+          <h2 class="uc-card-title">Nâng cấp subscription</h2>
+          <p class="uc-card-subtitle">User mua plan Pro hoặc Team qua Stripe Checkout. Payment service xử lý webhook idempotent và publish event để các service khác cập nhật feature access.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">3</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">4</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--green)">P2</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Authenticated User (free plan)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>payment-service :8085</code></div>
+        <div class="meta-item"><span class="meta-key">Provider:</span> <span style="color:var(--ink2);font-size:12px">Stripe (test mode ở MVP)</span></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng chính</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">User</td><td class="td-action">Nhấn "Upgrade to Pro"</td><td class="td-response"><code>POST /payments/checkout</code> — tạo Stripe Checkout Session</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-system">Stripe</td><td class="td-action">User điền card trên Stripe hosted page</td><td class="td-response">MindRepo không bao giờ thấy card number — PCI compliance do Stripe lo</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-system">Stripe</td><td class="td-action">Gửi webhook <code>checkout.session.completed</code></td><td class="td-response">Payment service verify signature, idempotency check, update subscription status</td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">Payment Service</td><td class="td-action">Publish event <code>subscription.activated</code> lên Redis</td><td class="td-response">User service consume: update <code>plan = 'pro'</code>. Repo service consume: unlock private repos</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Webhook idempotency: <code>stripe_event_id PRIMARY KEY</code> — gọi N lần cùng event = xử lý đúng 1 lần</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Feature gating dựa trên DB <code>user.plan</code> — không trust JWT claim (có thể stale)</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>DB update và Redis publish trong cùng transaction-like flow — nếu publish fail, retry khi restart</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- UC-13 -->
+    <div class="uc-card" id="uc-13" data-group="payment">
+      <div class="uc-card-header">
+        <div class="uc-card-id-block"><span class="uc-card-id">UC-13</span><span class="badge b-payment">Payment</span></div>
+        <div>
+          <h2 class="uc-card-title">Quản lý subscription</h2>
+          <p class="uc-card-subtitle">User xem trạng thái subscription, lịch sử invoice, và hủy plan. Khi hủy, downgrade xảy ra cuối billing period, không ngay lập tức.</p>
+        </div>
+      </div>
+      <div class="score-block">
+        <div class="score-item"><div class="score-num" style="color:var(--green)">3</div><div class="score-label">Giá trị</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--amber)">3</div><div class="score-label">Độ khó</div><div class="score-bar-row" style="color:var(--amber)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+        <div class="score-item"><div class="score-num" style="color:var(--green)">P2</div><div class="score-label">Ưu tiên</div><div class="score-bar-row" style="color:var(--green)"><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip on"></div><div class="score-pip"></div><div class="score-pip"></div></div></div>
+      </div>
+      <div class="uc-meta-row">
+        <div class="meta-item"><span class="meta-key">Tác nhân:</span> <span style="color:var(--ink2);font-size:12px">Authenticated User (có subscription)</span></div>
+        <div class="meta-item"><span class="meta-key">Service:</span> <code>payment-service :8085</code></div>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Luồng hủy subscription</div>
+        <table class="scenario-table">
+          <thead><tr><th>#</th><th>Tác nhân</th><th>Hành động</th><th>Phản hồi hệ thống</th></tr></thead>
+          <tbody>
+            <tr><td><div class="step-num">1</div></td><td class="actor-user">User</td><td class="td-action">Nhấn "Hủy subscription" trong Settings</td><td class="td-response">Confirmation dialog hiển thị ngày hết hạn và những gì sẽ mất</td></tr>
+            <tr><td><div class="step-num">2</div></td><td class="actor-user">User</td><td class="td-action">Xác nhận hủy</td><td class="td-response">Stripe: <code>cancel_at_period_end = true</code>. DB: status → <code>canceling</code>. User vẫn có Pro đến cuối kỳ</td></tr>
+            <tr><td><div class="step-num">3</div></td><td class="actor-system">Stripe</td><td class="td-action">Hết billing period, gửi <code>customer.subscription.deleted</code></td><td class="td-response">Payment service publish <code>subscription.canceled</code>. User service downgrade về <code>free</code></td></tr>
+            <tr><td><div class="step-num">4</div></td><td class="actor-system">Repo Service</td><td class="td-action">Consume event, xử lý private repos vượt giới hạn free tier</td><td class="td-response">Lock private repos (không xóa), yêu cầu user chọn repos muốn giữ public hoặc upgrade lại</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="subsec">
+        <div class="subsec-title">Yêu cầu phi chức năng</div>
+        <ul class="nfr-list">
+          <li class="nfr-item"><span class="nfr-dot"></span>Không xóa dữ liệu khi downgrade — chỉ lock access. User có thể upgrade lại và lấy lại toàn bộ</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Email notification 3 ngày trước khi subscription hết hạn (invoice.upcoming webhook)</li>
+          <li class="nfr-item"><span class="nfr-dot"></span>Failed payment: Stripe tự retry 4 lần trong 8 ngày. Email reminder sau mỗi lần thất bại</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+</div>
+
+<script>
+// Sidebar active state on scroll
+const cards = document.querySelectorAll('.uc-card');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(n => {
+        n.classList.toggle('active', n.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+cards.forEach(c => observer.observe(c));
+
+// Filter chips
+const chips = document.querySelectorAll('.chip[data-filter]');
+chips.forEach(chip => {
+  chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const filter = chip.dataset.filter;
+    cards.forEach(card => {
+      card.classList.toggle('hidden', filter !== 'all' && card.dataset.group !== filter);
+    });
+    document.querySelectorAll('.uc-divider').forEach(d => d.style.display = filter === 'all' ? '' : 'none');
+  });
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.toLowerCase();
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.classList.toggle('hidden', q.length > 1 && !text.includes(q));
+  });
+  if (!q) chips[0].click();
+});
+
+// Nav click
+navItems.forEach(item => {
+  item.addEventListener('click', e => {
+    navItems.forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
