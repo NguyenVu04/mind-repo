@@ -281,14 +281,11 @@ Annotation layer and reputation-weighted review system.
 - Fallback to Tier 0 weight if User service is unavailable — reviews still saved, recalculated later
 - **Owns:** `community_svc.annotations`, `community_svc.reviews`, `community_svc.votes`
 
-### Notification Service `:8084` — Go
-Pure event consumer — no business logic.
-
 - Subscribes to Redis pub/sub channels: `document.indexed`, `annotation.approved`, `subscription.changed`, `invoice.payment_failed`
 - Sends email via SendGrid and in-app notifications
 - **Owns:** `notif_svc.notifications`
 
-### Payment Service `:8085` — Go
+### Payment Service `:8084` — Go
 Stripe orchestration layer — never handles card data directly.
 
 - Creates Stripe Checkout Sessions for subscription upgrades
@@ -500,8 +497,7 @@ mindrep/
 │   │
 │   ├── repo-service/                # Go — :8082
 │   ├── community-service/           # Go — :8083
-│   ├── notification-service/        # Go — :8084
-│   ├── payment-service/             # Go — :8085
+│   ├── payment-service/             # Go — :8084
 │   │
 │   ├── ai-service/                  # Python — :8090
 │   │   ├── main.py                  # FastAPI app

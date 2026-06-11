@@ -1,0 +1,54 @@
+# ── Environment & secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# ── Go services ───────────────────────────────────────────────────────────────
+# Compiled binaries
+services/*/bin/
+services/*/*.exe
+services/*/*.out
+
+# Test & coverage
+*.test
+*.cover
+coverage.out
+coverage.html
+
+# ── Python (ai-service) ───────────────────────────────────────────────────────
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/.venv/
+**/venv/
+**/.python-version
+**/dist/
+**/build/
+**/*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# ── Frontend (Next.js / pnpm) ─────────────────────────────────────────────────
+node_modules/
+.pnpm-debug.log*
+
+# ── Taskfile / build artifacts ────────────────────────────────────────────────
+tmp/
+dist/
+
+# ── OS & editors ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.suo
+*.user
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/

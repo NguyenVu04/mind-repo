@@ -1,0 +1,54 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task --list
+    desc: "Show all available tasks"
+    silent: true
+
+  # Frontend
+  frontend:dev:
+    desc: "Run frontend dev server"
+    dir: frontend
+    cmd: pnpm dev
+
+  frontend:build:
+    desc: "Build frontend"
+    dir: frontend
+    cmd: pnpm build
+
+  # Services
+  svc:user:
+    desc: "Run user-service"
+    dir: services/user-service
+    cmd: go run .
+
+  svc:repo:
+    desc: "Run repo-service"
+    dir: services/repo-service
+    cmd: go run .
+
+  svc:community:
+    desc: "Run community-service"
+    dir: services/community-service
+    cmd: go run .
+
+  svc:payment:
+    desc: "Run payment-service"
+    dir: services/payment-service
+    cmd: go run .
+
+  svc:ai:
+    desc: "Run ai-service"
+    dir: services/ai-service
+    cmds:
+      - cmd: py -m uv run uvicorn src.main:app --reload --port 8090
+        platforms: [windows]
+      - cmd: python -m uv run uvicorn src.main:app --reload --port 8090
+        platforms: [linux, darwin]
+
+  svc:ai:lint:
+    desc: "Lint ai-service"
+    dir: services/ai-service
+    cmd: py -m uv run ruff check . --fix && py -m uv run ruff format . && py -m uv run mypy .

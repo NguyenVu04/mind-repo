@@ -1,0 +1,9 @@
+basePath: /api/v1
+host: localhost:8083
+info:
+  contact: {}
+  description: API cho community service
+  title: Community Service API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
