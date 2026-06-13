@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0f0f0d;
+  --bg2: #161614;
+  --bg3: #1e1e1b;
+  --bg4: #252520;
+  --ink: #e8e6df;
+  --ink2: #a8a59c;
+  --ink3: #6b6860;
+  --ink4: #cdcabf;
+  --ink5: #3d3b36;
+  --green: #4ade80;
+  --teal: #2dd4bf;
+  --blue: #60a5fa;
+  --purple: #c084fc;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --line: rgba(255, 255, 255, 0.07);
+  --line2: rgba(255, 255, 255, 0.12);
+  --mono: var(--font-ibm-plex-mono), monospace;
+  --sans: var(--font-ibm-plex-sans), sans-serif;
+  --serif: var(--font-ibm-plex-serif), serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #252520; border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.animate-pulse-dot {
+  animation: pulse 2s infinite;
+}
+
+.animate-blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.3s ease;
+}
+
+/* Nav items */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: background 0.12s;
+  border: none;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+}
+.nav-item:hover { background: #1e1e1b; }
+
+/* Hover utilities */
+.hover-green:hover { background: rgba(74, 222, 128, 0.14) !important; }
+.hover-green-sm:hover { background: rgba(74, 222, 128, 0.1) !important; }
+.hover-card:hover { border-color: rgba(255, 255, 255, 0.18) !important; }
+.hover-teal:hover { border-color: #2dd4bf !important; color: #e8e6df !important; }
+.hover-purple:hover { background: rgba(192, 132, 252, 0.12) !important; }
+.hover-bg2:hover { background: #1e1e1b !important; }
+.hover-green-bright:hover { background: #6ee79b !important; }
+
+@media (max-width: 880px) {
+  .rail-hide { display: none !important; }
 }
